@@ -1,0 +1,3 @@
+custom:
+  property:
+    description: ${TEST_USER_SERVICE_DESCRIPTION}

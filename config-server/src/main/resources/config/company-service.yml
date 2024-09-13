@@ -1,0 +1,6 @@
+server:
+  port: 8089
+
+custom:
+  property:
+    description: Company service prod version

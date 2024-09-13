@@ -1,0 +1,6 @@
+server:
+  port: 8090
+
+custom:
+  property:
+    description: User service prod version
