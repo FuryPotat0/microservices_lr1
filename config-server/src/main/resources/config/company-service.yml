@@ -1,6 +1,12 @@
 server:
   port: 8089
 
+spring:
+  datasource:
+    url: jdbc:postgresql://host.docker.internal:5433/microservices?currentSchema=company-schema
+    username: pguser
+    password: pguserpass
+
 custom:
   property:
     description: Company service prod version
