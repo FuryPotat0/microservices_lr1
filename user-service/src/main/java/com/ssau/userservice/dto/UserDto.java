@@ -15,6 +15,8 @@ public class UserDto {
 
     private String login;
 
+    private String password;
+
     private String companyName;
 
     private Long companyId;
@@ -33,6 +35,7 @@ public class UserDto {
                 dto.getName(),
                 dto.getEmail(),
                 dto.getLogin(),
+                dto.getPassword(),
                 dto.getCompanyId()
         );
     }

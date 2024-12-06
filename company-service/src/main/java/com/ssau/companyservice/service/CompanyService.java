@@ -40,9 +40,12 @@ public class CompanyService {
         List<Company> companies = repository.findAll();
         List<CompanyDto> companyDtos = new ArrayList<>(companies.size());
         for (Company company : companies) {
-            String chiefName = userFeignServiceClient.getUserNameById(
-                    company.getChiefId()
-            );
+            String chiefName = null;
+            if (company.getChiefId() != null){
+                chiefName = userFeignServiceClient.getUserNameById(
+                        company.getChiefId()
+                );
+            }
             CompanyDto companyDto = CompanyDto.toDto(company);
             companyDto.setChiefName(chiefName);
             companyDtos.add(companyDto);
@@ -57,5 +60,20 @@ public class CompanyService {
                         "Компания с идентификатором %s не найдена".formatted(companyId)
                 )
         ).getName();
+    }
+
+    public void changeCompanyChief(Long companyId, Long chiefId) {
+        Boolean isExistsUser = userFeignServiceClient.existUserById(chiefId);
+        if (!isExistsUser){
+            throw new EntityNotFoundException(
+                    "Пользователь с идентификатором %s не найден!".formatted(chiefId)
+            );
+        }
+        Company company = repository.findById(companyId).orElseThrow(
+                () -> new EntityNotFoundException(
+                        "Компания с идентификатором %s не найдена".formatted(companyId)
+                ));
+        company.setChiefId(chiefId);
+        repository.save(company);
     }
 }

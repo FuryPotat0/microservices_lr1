@@ -3,11 +3,13 @@ package com.ssau.companyservice.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name = "company")
+@NoArgsConstructor
+@Table(name = "company", schema = "company-schema")
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

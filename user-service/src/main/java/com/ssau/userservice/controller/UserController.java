@@ -28,12 +28,12 @@ public class UserController {
     }
 
     @GetMapping("/exists-by-id/{userId}")
-    public Boolean existUserById(@PathVariable("userId") Long userId) {
-        return service.existById(userId);
+    public Boolean existsUserById(@PathVariable("userId") Long userId) {
+        return service.existsById(userId);
     }
 
     @PostMapping("/create-user")
-    public ResponseEntity<?> createUser(UserDto dto) {
+    public ResponseEntity<?> createUser(@RequestBody UserDto dto) {
         try {
             return new ResponseEntity<>(service.createUser(dto), HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
@@ -47,7 +47,7 @@ public class UserController {
     public ResponseEntity<?> setUserState(@PathVariable("userId") Long userId, Boolean isEnabled) {
         try {
             return new ResponseEntity<>(
-                    service.setUserState(userId, isEnabled), HttpStatus.CREATED
+                    service.setUserState(userId, isEnabled), HttpStatus.OK
             );
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -61,9 +61,10 @@ public class UserController {
         return service.getAllUsers();
     }
 
-    @PatchMapping("/update-user")
-    public ResponseEntity<?> updateUser(UserDto dto) {
+    @PatchMapping("/{userId}/update")
+    public ResponseEntity<?> updateUser(@PathVariable("userId") Long userId, @RequestBody UserDto dto) {
         try {
+            dto.setId(userId);
             return new ResponseEntity<>(service.updateUser(dto), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

@@ -30,7 +30,7 @@ public class UserService {
         return repository.save(UserDto.toEntity(dto)).getId();
     }
 
-    public Boolean existById(Long userId) {
+    public Boolean existsById(Long userId) {
         boolean isExists = false;
         Optional<User> user = repository.findById(userId);
         if (user.isPresent()) {
@@ -83,7 +83,7 @@ public class UserService {
             user.setName(dto.getName());
         }
         if (dto.getEmail() != null) {
-            user.setName(dto.getEmail());
+            user.setEmail(dto.getEmail());
         }
         if (dto.getCompanyId() != null && !dto.getCompanyId().equals(user.getCompanyId())) {
             Boolean existById = feignClient.existById(dto.getCompanyId());
@@ -92,8 +92,9 @@ public class UserService {
                         "Компании с идентификатором %s не существует".formatted(dto.getCompanyId())
                 );
             }
-            user.setName(dto.getName());
+            user.setCompanyId(dto.getCompanyId());
         }
-        return user.getId();
+
+        return repository.save(user).getId();
     }
 }

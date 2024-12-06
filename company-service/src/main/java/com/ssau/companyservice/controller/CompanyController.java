@@ -27,7 +27,7 @@ public class CompanyController {
     }
 
     @PostMapping("/create-company")
-    public ResponseEntity<?> createCompany(CompanyDto dto) {
+    public ResponseEntity<?> createCompany(@RequestBody CompanyDto dto) {
         try {
             return new ResponseEntity<>(service.createCompany(dto), HttpStatus.CREATED);
         }
@@ -43,6 +43,20 @@ public class CompanyController {
     public ResponseEntity<?> getCompanyNameById(@PathVariable("companyId") Long companyId) {
         try {
             return new ResponseEntity<>(service.getCompanyNameById(companyId), HttpStatus.OK);
+        }
+        catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping("/{companyId}/change-chief")
+    public ResponseEntity<?> changeCompanyChief(@PathVariable("companyId") Long companyId, @RequestBody Long chiefId) {
+        try {
+            service.changeCompanyChief(companyId, chiefId);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
