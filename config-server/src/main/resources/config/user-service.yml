@@ -10,3 +10,8 @@ spring:
 custom:
   property:
     description: User service prod version
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8081/eureka

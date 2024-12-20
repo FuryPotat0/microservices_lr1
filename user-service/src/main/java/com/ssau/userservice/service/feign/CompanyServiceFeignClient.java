@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(
         name = "company-service",
-        path = "/api/companies",
-        url = "http://localhost:8089"
+        path = "/company",
+        url = "http://localhost:8082"
 )
 public interface CompanyServiceFeignClient {
     @GetMapping("/exist-by-id/{companyId}")
