@@ -4,3 +4,13 @@ spring:
   cloud:
     config:
       uri: ${CONFIG_SERVER_URL}
+  kafka:
+    bootstrap-servers: host.docker.internal:29092
+    consumer:
+      group-id: company-group
+      topic:
+        company-deleted-user: company-deleted-user-topic
+    producer:
+      group-id: company-service-group
+      topic:
+        company-deleted: company-deleted-topic

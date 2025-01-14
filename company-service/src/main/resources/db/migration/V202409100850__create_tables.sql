@@ -4,5 +4,6 @@ CREATE TABLE "company"
     name                   VARCHAR(256) NOT NULL,
     ogrn                   VARCHAR(13) NOT NULL,
     activity_description   VARCHAR(256) NOT NULL,
+    is_deleted             BOOLEAN,
     chief_id               BIGINT
 )

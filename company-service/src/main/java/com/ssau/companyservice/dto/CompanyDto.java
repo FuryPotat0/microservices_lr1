@@ -1,6 +1,9 @@
 package com.ssau.companyservice.dto;
 
 import com.ssau.companyservice.entity.Company;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,10 +21,12 @@ public class CompanyDto {
     private String activityDescription;
 
     private String chiefName;
+    
+    private boolean isDeleted;
 
     private Long chiefId;
 
-    public CompanyDto(Long id, String name, String ogrn, String activityDescription, Long chiefId) {
+    public CompanyDto(Long id, String name, String ogrn, String activityDescription, boolean isDeleted, Long chiefId) {
         this.id = id;
         this.name = name;
         this.ogrn = ogrn;
@@ -35,6 +40,7 @@ public class CompanyDto {
                 dto.name,
                 dto.ogrn,
                 dto.activityDescription,
+                dto.isDeleted,
                 dto.chiefId
         );
     }
@@ -45,6 +51,7 @@ public class CompanyDto {
                 company.getName(),
                 company.getOgrn(),
                 company.getActivityDescription(),
+                company.isDeleted(),
                 company.getChiefId()
         );
     }

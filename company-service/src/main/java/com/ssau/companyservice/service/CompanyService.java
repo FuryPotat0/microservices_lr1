@@ -2,10 +2,12 @@ package com.ssau.companyservice.service;
 
 import com.ssau.companyservice.dto.CompanyDto;
 import com.ssau.companyservice.entity.Company;
+import com.ssau.companyservice.kafka.CompanyKafkaProducer;
 import com.ssau.companyservice.repository.CompanyRepository;
 import com.ssau.companyservice.service.feignclient.UserFeignServiceClient;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class CompanyService {
     private final CompanyRepository repository;
     private final UserFeignServiceClient userFeignServiceClient;
+    private final CompanyKafkaProducer kafkaProducer;
 
     public Boolean existsById(Long companyId) {
         return repository.existsById(companyId);
@@ -75,5 +78,32 @@ public class CompanyService {
                 ));
         company.setChiefId(chiefId);
         repository.save(company);
+    }
+
+    public Long deleteCompany(Long companyId) {
+        Optional<Company> company = repository.findById(companyId);
+        if (company.isEmpty()) {
+            throw new EntityNotFoundException(
+                    "Компания с идентификатором %s не найдена".formatted(companyId)
+            );
+        }
+        Company companyObj = company.get();
+        companyObj.setDeleted(true);
+
+        kafkaProducer.sendDeleteCompanyMessage(String.valueOf(companyId));
+
+        return repository.save(companyObj).getId();
+    }
+
+    @KafkaListener(
+            topics = "${spring.kafka.consumer.topic.company-deleted-user}",
+            groupId = "${spring.kafka.consumer.group-id}"
+    )
+    public void updateUsersFor(String companyId) {
+        Optional<Company> company = repository.findById(Long.valueOf(companyId));
+        if(company.isPresent())
+            repository.delete(company.get());
+        else
+            throw new EntityNotFoundException("Компания не найдена");
     }
 }

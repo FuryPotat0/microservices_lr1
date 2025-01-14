@@ -21,5 +21,7 @@ public class Company {
 
     private String activityDescription;
 
+    private boolean isDeleted;
+
     private Long chiefId;
 }

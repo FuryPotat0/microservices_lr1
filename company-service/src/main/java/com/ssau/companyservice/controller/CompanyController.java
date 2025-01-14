@@ -65,4 +65,17 @@ public class CompanyController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/{companyId}/delete-company")
+    public ResponseEntity<?> deleteCompany(@PathVariable("companyId") Long companyId) {
+        try {
+            return new ResponseEntity<>(service.deleteCompany(companyId), HttpStatus.CREATED);
+        }
+        catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

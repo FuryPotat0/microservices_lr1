@@ -2,10 +2,12 @@ package com.ssau.userservice.service;
 
 import com.ssau.userservice.dto.UserDto;
 import com.ssau.userservice.entity.User;
+import com.ssau.userservice.kafka.UserKafkaProducer;
 import com.ssau.userservice.repository.UserRepository;
 import com.ssau.userservice.service.feign.CompanyServiceFeignClient;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository repository;
     private final CompanyServiceFeignClient feignClient;
+    private final UserKafkaProducer kafkaProducer;
 
     @Transactional
     public Long createUser(UserDto dto) {
@@ -66,9 +69,11 @@ public class UserService {
         ArrayList<UserDto> userDtos = new ArrayList<>(users.size());
         for (User user : users) {
             UserDto dto = UserDto.toDto(user);
-            dto.setCompanyName(
-                    feignClient.getCompanyNameById(dto.getCompanyId())
-            );
+            if (dto.getCompanyId() != null) {
+                dto.setCompanyName(
+                        feignClient.getCompanyNameById(dto.getCompanyId())
+                );
+            }
             userDtos.add(dto);
         }
         return userDtos;
@@ -96,5 +101,19 @@ public class UserService {
         }
 
         return repository.save(user).getId();
+    }
+
+    @KafkaListener(
+            topics = "${spring.kafka.consumer.topic.company-deleted}",
+            groupId = "${spring.kafka.consumer.group-id}"
+    )
+    public void updateUsersForDeleteCompany(String companyId) {
+        List<User> users = repository.findByCompanyId(Long.valueOf(companyId));
+        for (User user : users) {
+            user.setCompanyId(null);
+        }
+        repository.saveAll(users);
+
+        kafkaProducer.sendDeleteCompanyUsersMessage(companyId);
     }
 }
